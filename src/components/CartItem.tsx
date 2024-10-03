@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import cancel from "../assets/cancel.svg";
 import checked from "../assets/checked.svg";
 import unchecked from "../assets/unchecked.svg";
@@ -9,35 +9,29 @@ interface Product {
   price: number;
   discount: number;
   category: string;
+  quantity: number;
+  color: string;
   image: string;
 }
 
 interface ProuductProps {
   item: Product;
+  action: (itemId: number) => void;
 }
 
-const CartItem: React.FC<ProuductProps> = ({ item }) => {
+const CartItem: React.FC<ProuductProps> = ({ item, action }) => {
   const [isChecked, setIsChecked] = useState(true);
-  const [isExist, setIsExist] = useState(true);
-
-  const handleCancel = () => {
-    setIsExist(false);
-  }
 
   const toggleCheckbox = () => {
     setIsChecked(!isChecked);
   };
-
-  if (!isExist) {
-    return null;
-  }
 
   const textStyle = {
     textDecoration: "line-through"
   };
 
   return (
-    <div style={{ maxWidth: "703.2px" }}>
+    <div style={{ maxWidth: "703.2px" }} className="p-5">
       <div className="flex items-center mb-8">
         <div className="text-black font-bold text-xl">{item.category}</div>
       </div>
@@ -45,11 +39,11 @@ const CartItem: React.FC<ProuductProps> = ({ item }) => {
       <div className="flex items-start gap-5">
         <img
           src={isChecked ? checked : unchecked}
-          alt={isChecked ? 'Checked' : 'Unchecked'}
+          alt={isChecked ? "Checked" : "Unchecked"}
           onClick={toggleCheckbox}
           className="h-7 w-7"
         />
-        <div className="flex-1 mr-4">
+        <div className="flex-1">
           <div className="flex gap-8 items-start">
             <img
               src={item.image ? item.image : "https://via.placeholder.com/300x400?text=Item+1"}
@@ -57,15 +51,23 @@ const CartItem: React.FC<ProuductProps> = ({ item }) => {
             />
             <div className="flex-1 text-left">
               <p className="font-medium text-black text-lg">{item.title}</p>
-              <p className="text-gray-700 text-lg">블랙 / 1개</p>
-              <p className="text-gray-700 text-lg" style={textStyle}>${item.discount}</p>
-              <p className="font-bold text-black text-lg">${item.price}</p>
+              <p className="text-gray-700 text-lg">{`${item.color} / ${item.quantity}개`}</p>
+              {item.discount === item.price ? (
+                <div>
+                  <p className="font-bold text-black text-lg">${item.price}</p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-gray-700 text-lg" style={textStyle}>${item.discount}</p>
+                  <p className="font-bold text-black text-lg">${item.price}</p>
+                </div>
+              )}
             </div>
             <img
               src={cancel}
               alt="Cancel"
               className="h-3 w-3 cursor-pointer"
-              onClick={handleCancel}
+              onClick={() => action(item.id)}
             />
           </div>
           <div className="flex space-x-2 my-7">
