@@ -26,6 +26,15 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<ProductDetail | null>(null);
 
+  const [cart, setCart] = useState<ProductDetail[]>(() => {
+    const saveItems = sessionStorage.getItem("cartItems");
+    return saveItems ? JSON.parse(saveItems) : [];
+  });
+
+  const addCart = (newItem: ProductDetail) => {
+    setCart((prev) => [...prev, newItem]);
+  };
+
   // 상품 상세 정보 요청 API
   const getProductDetail = async () => {
     const response = await fetch(url);
@@ -37,6 +46,11 @@ const ProductDetail = () => {
   useEffect(() => {
     getProductDetail();
   }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem("cartItems", JSON.stringify(cart));
+  }, [cart]);
+
   console.log(data);
   return (
     // 최대 너비 설정해줘야 함
@@ -79,7 +93,7 @@ const ProductDetail = () => {
               <p className="text-start">"{data!.description}"</p>
             </div>
             <div className="flex w-full h-12 gap-3">
-              <button className="w-1/5">장바구니</button>
+              <button className="w-1/5" onClick={data ? () => addCart(data) : undefined}>장바구니</button>
               <button className="w-4/5">구매하기</button>
             </div>
           </div>

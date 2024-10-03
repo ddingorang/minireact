@@ -9,43 +9,48 @@ interface Product {
   price: number;
   discount: number;
   category: string;
+  quantity: number;
+  color: string;
   image: string;
 }
 
 const Cart: React.FC = () => {
-  const [products, getProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => {
+    const saveItems = sessionStorage.getItem("cartItems");
+    return saveItems ? JSON.parse(saveItems) : [];
+  });
   const [isEmpty, setIsEmpty] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const colors = ["black", "white", "gray", "navy", "beige", "brown", "silver"];
 
-  const getData = async () => {
-    const json = await (
-      await fetch(`https://fakestoreapi.com/products`)
-    ).json();
-    console.log(json.length);
-    const jsonData = json.slice(0, 10);
-
-    const totalPrice = jsonData.reduce(
-      (total: number, item: Product) => total + item.price, 0);
-
-    const productData = jsonData.map((item: Product) => ({
+  const getData = () => {
+    const productData = products.map((item: Product) => ({
       id: item.id,
       title: item.title,
       price: item.price,
-      discount: item.price * (Math.floor(Math.random() * 10) + 1),
+      discount: parseFloat((item.price * (Math.floor(Math.random() * 6) + 1)).toFixed(2)),
       category: item.category,
+      quantity: (Math.floor(Math.random() * 3) + 1),
+      color: colors[(Math.floor(Math.random()) * colors.length)],
       image: item.image,
     }));
     console.log(productData);
+    setProducts(productData);
+  };
 
-    if (jsonData.length === 0) {
-      setIsEmpty(true);
-    } else {
-      setIsEmpty(false);
-    }
-    getProducts(productData);
+  const updateData = () => {
+    const totalPrice = products.reduce(
+      (total: number, item: Product) => total + item.price, 0);
+
     setTotalPrice(totalPrice);
-    setTotalCount(productData.length);
+    setTotalCount(products.length);
+    setIsEmpty(products.length === 0);
+  }
+
+  const handleRemove = (itemId: number) => {
+    const updatedCart = products.filter(item => item.id !== itemId);
+    setProducts(updatedCart);
   };
 
   useEffect(() => {
@@ -53,11 +58,8 @@ const Cart: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (products.length > 0) {
-      setIsEmpty(false);
-    } else {
-      setIsEmpty(true);
-    }
+    updateData();
+    sessionStorage.setItem("cartItems", JSON.stringify(products));
   }, [products]);
 
   return (
@@ -71,9 +73,9 @@ const Cart: React.FC = () => {
       ) : (
         <div>
           {products.map((product) => (
-            <CartItem item={product} />
+            <CartItem item={product} action={handleRemove} />
           ))}
-          <CartButton content={`$${totalPrice} 구매하기 (${totalCount}개)`} />
+          <CartButton content={`$${totalPrice.toFixed(2)} 구매하기 (${totalCount}개)`} />
         </div>
       )}
     </div>
