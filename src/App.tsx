@@ -9,7 +9,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 import "./App.css";
-
+import Cart from "./pages/Cart"
 import Best from "./pages/best";
 import Men from "./pages/men";
 import Etc from "./pages/etc";
@@ -25,6 +25,7 @@ const App: React.FC = () => {
       {/* 라우트 설정 */}
       <Routes>
         <Route path="/" element={<MainContent />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/category/best" element={<Best />} />{" "}
         <Route path="/category/women" element={<Women />} />{" "}
         <Route path="/category/men" element={<Men />} />{" "}
