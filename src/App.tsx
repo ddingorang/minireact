@@ -16,6 +16,8 @@ import Etc from "./pages/etc";
 import SHOES from "./pages/shoes";
 import Women from "./pages/women";
 import ProductDetail from "./components/ProductDetail";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 // 기타 필요한 컴포넌트 임포트
 
 const App: React.FC = () => {
@@ -25,6 +27,8 @@ const App: React.FC = () => {
       {/* 라우트 설정 */}
       <Routes>
         <Route path="/" element={<MainContent />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/category/best" element={<Best />} />{" "}
         <Route path="/category/women" element={<Women />} />{" "}
